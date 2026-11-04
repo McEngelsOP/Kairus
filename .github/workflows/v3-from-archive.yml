@@ -63,7 +63,7 @@ jobs:
           test "$(/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' "$APP/Info.plist")" = 3.0.0
           test "$(/usr/libexec/PlistBuddy -c 'Print CFBundleSupportedPlatforms:0' "$APP/Info.plist")" = iPhoneOS
           EXE=$(/usr/libexec/PlistBuddy -c 'Print CFBundleExecutable' "$APP/Info.plist")
-          xcrun lipo -verify_arch arm64 "$APP/$EXE"
+          xcrun lipo "$APP/$EXE" -verify_arch arm64
           ditto -c -k --keepParent Kairus.xcarchive ../Kairus-3.0.0-iPhone-sin-firmar.xcarchive.zip
       - uses: actions/upload-artifact@v4
         with:
