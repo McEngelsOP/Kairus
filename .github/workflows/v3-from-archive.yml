@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   push:
     branches: [kairus-v3]
-    paths: [.github/workflows/v3-from-archive.yml]
+    paths: [Kairus-3.0.0-codigo.zip, .github/workflows/v3-from-archive.yml]
 permissions:
   contents: read
 jobs:
@@ -22,7 +22,7 @@ jobs:
           distribution: temurin
           java-version: 21
       - run: |
-          echo "54ed05efca9b6c3105ce3cdde5eb78489306f13b2e6f35c115129b4b89c048c4  Kairus-3.0.0-codigo.zip" | sha256sum -c -
+          echo "9d6729030ec2f689ef2be220eee8906f0a12be953eeed84429bfa23749542d3c  Kairus-3.0.0-codigo.zip" | sha256sum -c -
           unzip -q Kairus-3.0.0-codigo.zip
           cd Kairus-3.0.0
           npm ci --no-audit --no-fund
@@ -51,7 +51,7 @@ jobs:
         with:
           node-version: 22
       - run: |
-          echo "54ed05efca9b6c3105ce3cdde5eb78489306f13b2e6f35c115129b4b89c048c4  Kairus-3.0.0-codigo.zip" | shasum -a 256 -c -
+          echo "9d6729030ec2f689ef2be220eee8906f0a12be953eeed84429bfa23749542d3c  Kairus-3.0.0-codigo.zip" | shasum -a 256 -c -
           unzip -q Kairus-3.0.0-codigo.zip
           cd Kairus-3.0.0
           npm ci --no-audit --no-fund
