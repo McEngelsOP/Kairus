@@ -24,7 +24,8 @@ jobs:
         run: |
           echo '4f9c978669aa5dc49591e7e1f5020a706c4f935c9649247fe61c7ba045561284  Kairus-1.0.1-codigo.zip' | sha256sum -c -
           unzip -q Kairus-1.0.1-codigo.zip
-          sdkmanager 'platforms;android-36' 'build-tools;36.0.0'
+          test -f "$ANDROID_HOME/platforms/android-36/android.jar"
+          test -x "$ANDROID_HOME/build-tools/36.0.0/apksigner"
       - name: Build Android test package
         working-directory: Kairus
         run: |
