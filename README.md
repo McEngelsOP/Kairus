@@ -1,14 +1,14 @@
 # Kairus
 
-[Descargar Kairus 2.0.0 desde GitHub Releases](https://github.com/McEngelsOP/Kairus/releases/tag/v2.0.0).
+[Descargar Kairus 3.0.0 desde GitHub Releases](https://github.com/McEngelsOP/Kairus/releases/tag/v3.0.0).
 
 App móvil de registro de gastos, ingresos y transferencias para Android e iOS. La interfaz parte de `reference/money-tracker.html`. Conserva el diseño, los iconos, la navegación, el calendario y el teclado de ese prototipo.
 
-Los registros, las cuentas, los comprobantes y las preferencias se guardan en el dispositivo. La interfaz se empaqueta dentro de cada app con Capacitor y funciona sin servidor. Los importes se calculan en centavos. Cambiar de moneda modifica el símbolo y el código que se muestran. Las transferencias solo ajustan el saldo de las dos cuentas.
+Kairus abre en Inicio al cargar el registro local. Los registros, las cuentas, los comprobantes y las preferencias se guardan en el dispositivo. La interfaz se empaqueta dentro de cada app con Capacitor y funciona sin servidor. Los importes se calculan en centavos. Cambiar de moneda modifica el símbolo y el código que se muestran. Las transferencias solo ajustan el saldo de las dos cuentas.
 
 | Apartado | Funciones |
 | --- | --- |
-| Inicio | Movimientos por mes y día, calendario, búsqueda desde el encabezado, edición y eliminación. |
+| Inicio | Movimientos por mes y día, calendario, búsqueda desde el calendario, edición y eliminación. |
 | Gráficos | Categorías, importes diarios y últimos seis meses. |
 | Informes | Presupuesto por mes, cuentas y patrimonio. |
 | Yo | Apodo, idioma, moneda, estilo de iconos, recordatorios, movimientos recurrentes, Excel con gráficos y copias de seguridad. |
