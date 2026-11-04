@@ -1,0 +1,72 @@
+name: Verify and build Kairus 3.0.0
+on:
+  workflow_dispatch:
+  push:
+    branches: [kairus-v3]
+    paths: [.github/workflows/v3-from-archive.yml]
+permissions:
+  contents: read
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: |
+          echo "54ed05efca9b6c3105ce3cdde5eb78489306f13b2e6f35c115129b4b89c048c4  Kairus-3.0.0-codigo.zip" | sha256sum -c -
+          unzip -q Kairus-3.0.0-codigo.zip
+          cd Kairus-3.0.0
+          npm ci --no-audit --no-fund
+          npm run check
+          npm test
+          npm run build:html
+          cmp Kairus.html ../Kairus.html
+          npm run mobile:android
+          chmod +x android/gradlew
+          (cd android && ./gradlew assembleDebug --no-daemon)
+          cp android/app/build/outputs/apk/debug/app-debug.apk ../Kairus-3.0.0-android.apk
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose ../Kairus-3.0.0-android.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Kairus-3.0.0-Android
+          path: Kairus-3.0.0-android.apk
+          if-no-files-found: error
+  iphone:
+    runs-on: macos-26
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: |
+          echo "54ed05efca9b6c3105ce3cdde5eb78489306f13b2e6f35c115129b4b89c048c4  Kairus-3.0.0-codigo.zip" | shasum -a 256 -c -
+          unzip -q Kairus-3.0.0-codigo.zip
+          cd Kairus-3.0.0
+          npm ci --no-audit --no-fund
+          npm run mobile:ios
+          xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Release -destination 'generic/platform=iOS' -archivePath "$PWD/Kairus.xcarchive" CODE_SIGNING_ALLOWED=NO archive
+          APP=$(find Kairus.xcarchive/Products/Applications -maxdepth 1 -name '*.app' -type d | head -1)
+          test -n "$APP"
+          test "$(/usr/libexec/PlistBuddy -c 'Print MinimumOSVersion' "$APP/Info.plist")" = 16.0
+          test "$(/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' "$APP/Info.plist")" = 3.0.0
+          test "$(/usr/libexec/PlistBuddy -c 'Print CFBundleSupportedPlatforms:0' "$APP/Info.plist")" = iPhoneOS
+          EXE=$(/usr/libexec/PlistBuddy -c 'Print CFBundleExecutable' "$APP/Info.plist")
+          xcrun lipo -verify_arch arm64 "$APP/$EXE"
+          ditto -c -k --keepParent Kairus.xcarchive ../Kairus-3.0.0-iPhone-sin-firmar.xcarchive.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Kairus-3.0.0-iPhone-Archive
+          path: Kairus-3.0.0-iPhone-sin-firmar.xcarchive.zip
+          if-no-files-found: error
