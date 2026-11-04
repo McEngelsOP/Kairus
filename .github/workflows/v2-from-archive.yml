@@ -1,0 +1,68 @@
+name: Verify and build Kairus 2.0.0
+on:
+  workflow_dispatch:
+  push:
+    branches: [kairus-v2]
+    paths: [.github/workflows/v2-from-archive.yml]
+permissions:
+  contents: read
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: |
+          echo "239ce2d0768acb128617b90e8e4c9316a0e60954d02577ca835d0a8a07c9df97  Kairus-2.0.0-codigo.zip" | sha256sum -c -
+          unzip -q Kairus-2.0.0-codigo.zip
+          cd Kairus-2.0.0
+          npm ci --no-audit --no-fund
+          npm run check
+          npm test
+          npm run build:html
+          cmp Kairus.html ../Kairus.html
+          npm run mobile:android
+          test -f "$ANDROID_HOME/platforms/android-36/android.jar"
+          chmod +x android/gradlew
+          (cd android && ./gradlew assembleDebug --no-daemon)
+          cp android/app/build/outputs/apk/debug/app-debug.apk ../Kairus-2.0.0-android.apk
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose ../Kairus-2.0.0-android.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Kairus-2.0.0-Android
+          path: Kairus-2.0.0-android.apk
+          if-no-files-found: error
+  ios:
+    runs-on: macos-26
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: |
+          echo "239ce2d0768acb128617b90e8e4c9316a0e60954d02577ca835d0a8a07c9df97  Kairus-2.0.0-codigo.zip" | shasum -a 256 -c -
+          unzip -q Kairus-2.0.0-codigo.zip
+          cd Kairus-2.0.0
+          npm ci --no-audit --no-fund
+          npm run mobile:ios
+          xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Debug -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath build CODE_SIGNING_ALLOWED=NO build
+          APP=build/Build/Products/Debug-iphonesimulator/App.app
+          test "$(/usr/libexec/PlistBuddy -c 'Print MinimumOSVersion' "$APP/Info.plist")" = 16.0
+          ditto -c -k --keepParent "$APP" ../Kairus-2.0.0-iOS-simulator.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Kairus-2.0.0-iOS-Simulator
+          path: Kairus-2.0.0-iOS-simulator.zip
+          if-no-files-found: error
