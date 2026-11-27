@@ -1,6 +1,6 @@
 # Kairus
 
-[Descargar Kairus 3.0.0 desde GitHub Releases](https://github.com/McEngelsOP/Kairus/releases/tag/v3.0.0).
+[Descargar Kairus 4.0.0 desde GitHub Releases](https://github.com/McEngelsOP/Kairus/releases/tag/v4.0.0).
 
 App móvil de registro de gastos, ingresos y transferencias para Android e iOS. La interfaz parte de `reference/money-tracker.html`. Conserva el diseño, los iconos, la navegación, el calendario y el teclado de ese prototipo.
 
@@ -64,3 +64,4 @@ Para regenerar el archivo desde el código:
 npm ci
 npm run build:html
 ```
+
